@@ -1,5 +1,6 @@
 from flask import Flask
 from flask import jsonify
+from flask import request
 
 from flask_pymongo import PyMongo
 
@@ -11,7 +12,15 @@ mongo = PyMongo(app)
 
 @app.route('/init', methods=['POST'])
 def device_init():
-    return jsonify({"status":"OK"})
+    devices_db = mongo.db.devices
+    device_id = int(request.json['device_id'])
+    device = devices_db.findone({'device_id': device_id})
+
+    if device:
+        if device['status'] == 0:
+            device['status'] = 1
+            devices_db.save(device)
+            return jsonify ({"status":"ok"})
 
 @app.route('/sendgps', methods=['POST'])
 def sendgps():
