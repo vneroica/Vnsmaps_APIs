@@ -13,7 +13,7 @@ mongo = PyMongo(app)
 
 @app.route('/init', methods=['POST'])
 def device_init():
-    devices_db = mongo.db.devices
+    devices_db = mongo.db.Devices
     logs = mongo.db.logs
     if not "device_id" in request.form:
         logs.insert_one({"time": datetime.datetime.now(), "api":"init", "status":"fail"})
@@ -21,7 +21,10 @@ def device_init():
     else:
         
         device_id = int(request.form['device_id'])
+        print (device_id)
         device = devices_db.find_one({'device_id': device_id})
+
+        print (device)
 
         if device:
             if device['status'] == 0:
