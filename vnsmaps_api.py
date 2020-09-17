@@ -13,14 +13,19 @@ mongo = PyMongo(app)
 @app.route('/init', methods=['POST'])
 def device_init():
     devices_db = mongo.db.devices
-    device_id = int(request.json['device_id'])
-    device = devices_db.findone({'device_id': device_id})
+    print (request.form['device_id'])
+    device_id = int(request.form['device_id'])
+    device = devices_db.find_one({'device_id': device_id})
 
     if device:
         if device['status'] == 0:
             device['status'] = 1
             devices_db.save(device)
-            return jsonify ({"status":"ok"})
+            return jsonify ({"status":"ok"}) , 200
+        else:
+            return jsonify ({"status":"fail","details":"device_already_activated"})
+    else:
+        return jsonify ({"status":"fail","details":"device_id_incorrect"}), 201
 
 @app.route('/sendgps', methods=['POST'])
 def sendgps():
