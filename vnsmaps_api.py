@@ -76,13 +76,12 @@ def sendqrcode():
 def sendweight():
     weight_db = mongo.db.weightdata
     logs = mongo.db.logs
-    if not all(key in request.form for key in ('device_id', 'long', 'lat', 'speed', 'odbII', 'time')):
+    if not all(key in request.form for key in ('device_id', 'weight', 'time')):
         logs.insert_one({"time": datetime.datetime.now(), "api":"sendgps", "status":"fail"})
         return jsonify({"status":"fail", "detail":"bad_data"}), 419
     else:
         
-        weight_db.insert_one({"device_id": request.form['device_id'], "long": request.form['long'], "lat"
-                               : request.form['lat'], "speed": request.form['speed'], "odbII": request.form['odbII'],
+        weight_db.insert_one({"device_id": request.form['device_id'], "time": request.form['time'], "weight": request.form['weight'],
                            "server_time": datetime.datetime.now()})
         logs.insert_one({"time": datetime.datetime.now(), "api":"sendgps", "status":"ok"})
         return jsonify ({"status":"ok"}) , 200
