@@ -31,7 +31,7 @@ def device_init():
                 device['status'] = 1
                 devices_db.save(device)
                 logs.insert_one({"time": datetime.datetime.now(), "api":"init", "status":"ok"})
-                return jsonify ({"status":"ok"}) , 200
+                return jsonify ({"status":"ok", "owner": device['owner']}) , 200
             else:
                 logs.insert_one({"time": datetime.datetime.now(), "api":"init", "status":"fail"})
                 return jsonify ({"status":"fail","details":"device_already_activated"})
@@ -88,6 +88,6 @@ def sendweight():
 
 
 if __name__ == '__main__':
-   app.run(debug=True)
+   app.run()
 
 
