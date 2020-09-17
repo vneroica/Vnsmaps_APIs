@@ -43,28 +43,31 @@ def device_init():
 def sendgps():
     gps_db = mongo.db.Gpsdata
     logs = mongo.db.logs
-    if not all(key in request.form for key in ('device_id', 'long', 'lat', 'speed', 'odbII', 'time')):
+    if not all(key in request.form for key in ('device_id', 'long', 'lat', 'speed', 'odbII', 'time', 'N/S', 'W/E', 'direction')):
         logs.insert_one({"time": datetime.datetime.now(), "api":"sendgps", "status":"fail"})
         return jsonify({"status":"fail", "detail":"bad_data"}), 419
     else:
         
         gps_db.insert_one({"device_id": request.form['device_id'], "long": request.form['long'], "lat"
                                : request.form['lat'], "speed": request.form['speed'], "odbII": request.form['odbII'],
-                           "server_time": datetime.datetime.now()})
+                           "time": request.form['time'],
+                           "server_time": datetime.datetime.now(), "N/S": request.form['N/S'], "W/E": request.form['W/E'],
+                          "direction": request.form['direction']})
         logs.insert_one({"time": datetime.datetime.now(), "api":"sendgps", "status":"ok"})
         return jsonify ({"status":"ok"}) , 200
 
-@app.route('/sendgrcode', methods=['POST'])
+@app.route('/sendqrcode', methods=['POST'])
 def sendqrcode():
     qrcode_db = mongo.db.Driverlicencedata
     logs = mongo.db.logs
-    if not all(key in request.form for key in ('device_id', 'long', 'lat', 'speed', 'odbII', 'time')):
-        logs.insert_one({"time": datetime.datetime.now(), "api":"sendgps", "status":"fail"})
+    if not all(key in request.form for key in ('licence_id', 'license_name', 'birthday', 'licence_type', 'manager_office', 'time')):
+        logs.insert_one({"time": datetime.datetime.now(), "api":"sendqrcode", "status":"fail"})
         return jsonify({"status":"fail", "detail":"bad_data"}), 419
     else:
         
-        qrcode_db.insert_one({"device_id": request.form['device_id'], "long": request.form['long'], "lat"
-                               : request.form['lat'], "speed": request.form['speed'], "odbII": request.form['odbII'],
+        qrcode_db.insert_one({"license_id": request.form['license_id'], "license_name": request.form['license_name'], "license_type":
+                              request.form['license_type'], "birthday": request.form['birthday'],
+                              "manager_office": request.form['manager_office'],
                            "server_time": datetime.datetime.now()})
         logs.insert_one({"time": datetime.datetime.now(), "api":"sendgps", "status":"ok"})
         return jsonify ({"status":"ok"}) , 200
